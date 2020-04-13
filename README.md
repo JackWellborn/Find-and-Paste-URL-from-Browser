@@ -2,18 +2,18 @@
 A script to quickly return a given url from Safari or Google Chrome (Firefox does not have a scripting dictionary 😢).
 
 ## Introduction
-The script below uses Mac OS's JavaScript for Automation to retrieve the url of a tab in the frontmost Safari or Chrome window based on a provided query. It's based on my [TextExpander-Find-URL](https://github.com/JackWellborn/TextExpander-Find-URL) project, which you can read about more about [here](http://wormsandviruses.com/2018/07/textexpander-snippets-with-variables/). This script based solution has proven more reliable and much simpler, and just as conveninet when paired with [Red Sweater's FastScripts](https://red-sweater.com/fastscripts/). 
+The script below uses Mac OS's JavaScript for Automation to retrieve the url of a tab in the frontmost Safari or Chrome window based on a provided query. It's based on my [TextExpander-Find-URL](https://github.com/JackWellborn/TextExpander-Find-URL) project, which you can read about more about [here](http://wormsandviruses.com/2018/07/textexpander-snippets-with-variables/). This script based solution has proven more reliable and much simpler, and just as convenient when paired with [Red Sweater's FastScripts](https://red-sweater.com/fastscripts/). 
 
 ### Finding URLs
 There are currently five ways find URLs:
-1. Use text to find tabs by title.
-2. Use domains to find tabs by URL. 
-3. Use numbers to get a tab by absolute position (e.g. "1" for the leftmost tab and "-1" for the rightmost tab.)
-4. Use numbers preceded by "<" or ">" to get a tab by relative position to current tab (e.g. "<1" for one tab left of current tab and ">1" one tab right of current tab.)
-5. Leave empty to get the current tab.
+1. Use text to find tabs from all windows by title.
+2. Use domains to find tabs from all windows by URL. 
+3. Use numbers to get a tabs by absolute position from all windows (e.g. "1" for the leftmost tab and "-1" for the rightmost tab.)
+4. Use numbers preceded by "<" or ">" to get a tab by relative position to current tab of the frontmost window(e.g. "<1" for one tab left of current tab and ">1" one tab right of current tab.)
+5. Leave empty to get the current tab from the frontmost window.
 
 ### Templates and Actions
-In addition to returning just the URL, this script can also return the URLs formatted in predefined templates or perform an action. To use, simply append "!" followed by a code below. For example, "duckduckgo.com!m" will return:`[](duckduckgo.com)`. When using templates that a have plain text component, such as Markdown or HTML, the script will also attempt to press the arrow key back to where that plain text can be entered. 
+In addition to returning just the URL, this script can also return the URLs formatted in predefined templates or perform an action. To use, simply append `!` followed by a code below. For example, "duckduckgo.com!m" will return:`[](duckduckgo.com)`. When using templates that a have plain text component, such as Markdown or HTML, the script will also attempt to press the arrow key back to where that plain text can be entered. 
 
 The templates currently supported are the following:
 
