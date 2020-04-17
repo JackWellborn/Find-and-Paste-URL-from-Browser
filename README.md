@@ -14,7 +14,7 @@ I can't tell you how many times I was writing some sort of email or blog post on
 2. Numbers (e.g. 1,-1) will paste the URL of a tab near the current tab in the frontmost window (e.g. "-1" for one tab left of current tab and "1" one tab right of current tab.)
 
 #### I need the URL from some tab that I am pretty sure is still open.
-I also can't tell you how many times I was writing something only to find that I wanted to link to some URL that I know I was looking at this morning. Maybe it was yesterday? Whatever. You get the idea. The following syntax searches all tabs from all windows that based on the input provided. You can choose which URL to paste when multiple tabs match. A single match will immediately pasted, kind of like you knew where it was all along.
+I also can't tell you how many times I was writing something only to find that I wanted to link to some URL that I know I was looking at this morning. Maybe it was yesterday? Whatever. You get the idea. The following syntax searches all tabs from all windows based on the input provided. You can choose which URL to paste when multiple tabs match. A single match will immediately pasted, kind of like you knew where it was all along.
 
 1. Numbers preceded by "=" will present URLs from tabs by index in all windows (e.g. "=1"  for first tabs and "=-1" for last tabs.)
 2. Text will present URLs from tabs with titles containing that text.
