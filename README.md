@@ -2,23 +2,32 @@
 A script to quickly return a given url from Safari or Google Chrome (Firefox does not have a scripting dictionary 😢).
 
 ## Introduction
-The script below uses Mac OS's JavaScript for Automation to retrieve the url of a tab in the frontmost Safari or Chrome window based on a provided query. It's based on my [TextExpander-Find-URL](https://github.com/JackWellborn/TextExpander-Find-URL) project, which you can read about more about [here](http://wormsandviruses.com/2018/07/textexpander-snippets-with-variables/). This script based solution has proven more reliable and much simpler, and just as convenient when paired with [Red Sweater's FastScripts](https://red-sweater.com/fastscripts/). 
+The script below uses Mac OS's JavaScript for Automation to retrieve the url of a tab in the frontmost Safari or Chrome window based on a provided input. It's based on my [TextExpander-Find-URL](https://github.com/JackWellborn/TextExpander-Find-URL) project, which you can read about more about [here](http://wormsandviruses.com/2018/07/textexpander-snippets-with-variables/). This script based solution has proven more reliable and much simpler, and just as convenient when paired with [Red Sweater's FastScripts](https://red-sweater.com/fastscripts/). 
 
 ### Finding URLs
-There are currently five ways find URLs:
-1. Leave empty to get the current tab from the frontmost window.
-2. Use a number to get a tab relative to the current tab in the frontmost window (e.g. "-1" for one tab left of current tab and "1" one tab right of current tab.)
-3. Use a number to preceded by "=" get a tabs by absolute position in all windows (e.g. "=1" for the leftmost tab and "=-1" for the rightmost tab.)
-4. Use text to find tabs by title in all windows.
-5. Use domains to find tabs by URL in all windows.
+There are currently five ways find URLs that can be broken into two categories:
+
+#### I need the URL from _that_ Tab. I know where it is, and I can probably see it.
+I can't tell you how many times I was writing some sort of email or blog post only to find that I wanted to link to _that_ URL. Y'know _that_ one. Maybe it's the current tab. Maybe it's the one next the current tab, because I am writing in the current tab. You've been there, right? The syntax below always get and paste that one URL.
+
+1. Leave empty to paste the URL of the current tab in the frontmost window.
+2. Numbers (e.g. 1,-1) will paste the URL of a tab near the current tab in the frontmost window (e.g. "-1" for one tab left of current tab and "1" one tab right of current tab.)
+
+#### I need the URL from some tab that I am pretty sure is still open.
+I also can't tell you how many times I was writing something only to find that I wanted to link to some URL that I know I was looking at this morning. Maybe it was yesterday? Whatever. You get the idea. The following syntax searches all tabs from all windows that based on the input provided. You can choose which URL to paste when multiple tabs match. A single match will immediately pasted, kind of like you knew where it was all along.
+
+1. Numbers preceded by "=" will present URLs from tabs by index in all windows (e.g. "=1"  for first tabs and "=-1" for last tabs.)
+2. Text will present URLs from tabs with titles containing that text.
+3. Domains will present URLs from tabs with locations including that domain.
 
 ### Templates and Actions
-In addition to returning just the URL, this script can also return the URLs formatted in predefined templates or perform an action. To use, simply append ` .` followed by a code below. For example, "duckduckgo.com .m" will return:`[](duckduckgo.com)`. When using templates that a have plain text component, such as Markdown or HTML, the script will also attempt to press the arrow key back to where that plain text can be entered. 
+In addition to returning just the URL, this script can also return links formatted in predefined templates or perform an action. To add a template or action, simply append ` .` followed by a code below. When using a template, the script will also default using the URL as the linked text and attempt to simulate the keyboard input to navigate to and select URL so other text can be entered. For example, "duckduckgo.com .m" will return:`[duckduckgo.com](duckduckgo.com)`. T
 
 The templates currently supported are the following:
 
 1. m - Markdown
 2. h - HTML
+3. j - Jira
 
 The only action currently supported is the following:
 
