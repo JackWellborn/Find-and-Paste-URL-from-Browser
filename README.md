@@ -1,4 +1,4 @@
-# Find-and-Paste-URL-from-Browser
+# Find and Paste URL from Browser
 A script to quickly paste a given url from Safari or Google Chrome (Firefox does not have a scripting dictionary 😢).
 
 ## Introduction
