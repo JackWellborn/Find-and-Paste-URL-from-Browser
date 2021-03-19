@@ -62,20 +62,17 @@ You can configure `Find and Paste URL from Browser.scpt` by opening it Script Ed
 <tr>
 	<th>Name</th>
 	<th>Description</th>
-	<th>Default Value</th>
 	<th>Options</th>
 </tr>
 <tr>
 	<td><pre>browserConfig</pre></td>
 	<td>Which browser to use.</td>
-	<td><pre>browserConfigs.safari</pre></td>
-	<td><pre>browserConfigs.safari</pre><pre>browserConfigs.chrome</pre></td>
+	<td><pre>browserConfigs.safari (default)</pre><pre>browserConfigs.chrome</pre></td>
 </tr>
 <tr>
 	<td><pre>useReferenceStyleMarkdownLinksInBBEdit</pre></td>
 	<td>Enables reference-style links in BBEdit.</td>
-	<td><pre>true</pre></td>
-	<td><pre>true</pre><pre>false</pre></td>
+	<td><pre>true (default)</pre><pre>false</pre></td>
 </tr>
 </table>
 
