@@ -32,11 +32,11 @@ The templates currently supported are the following:
 #### Reference-Style Markdown Links in BBEdit
 Thanks to BBEdit's superb AppleScript support makes it possible to support Markdown's reference-style link format. When using the Markdown template in BBEdit, the script will...
 
-1. Prompt for a reference ID. The default value is the count of existing references + 1. 
+1. Additionally prompt for a reference ID. The default value is the count of existing references + 1. 
 2. Write the reference ID and link to the bottom of the document.
 3. Write the reference link, including the ID at original insertion point. If text is selected, the selected text will be used as linked text and the insertion point will be placed after the reference link. If no text is selected, the insertion point will be placed between the empty brackets for the linked text.
 	
-This is enabled by default, but can also be easily disabled (see "Configuration Options" below.) 
+This is enabled by default, but can be easily disabled (see "Configuration Options" below.) 
 
 The only action currently supported is the following:
 
@@ -81,8 +81,8 @@ You can configure `Find and Paste URL from Browser.scpt` by opening it Script Ed
 
 ## Updates
 ### 2021-03-19
-* Removed the need for a space for format and action codes when there is no other input. For example, getting the link from the current tab in Markdown format now works with `.m` in addition to ` .m`.
 * Added support for reference-style markdown links when using BBEdit.
+* Removed the need for a space for format and action codes when there is no other input. 
 
 ## Disclaimer
 Be aware that this solution uses automation to control keyboard input, manipulate the clipboard, and access Safari and Google Chrome. The scripts involved operate locally and only uses these privileges to return URLs as stated above, but this authors recommends further scrutiny when any solution has these and similar elevated privileges.
