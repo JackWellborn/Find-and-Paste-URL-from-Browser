@@ -29,18 +29,17 @@ The templates currently supported are the following:
 2. h - HTML
 3. j - Jira
 
-#### Reference-Style Markdown Links in BBEdit
-Thanks to BBEdit's superb AppleScript support makes it possible to support Markdown's reference-style link format. When using the Markdown template in BBEdit, the script will...
-
-1. Additionally prompt for a reference ID. The default value is the count of existing references + 1. 
-2. Write the reference ID and link to the bottom of the document.
-3. Write the reference link, including the ID at original insertion point. If text is selected, the selected text will be used as linked text and the insertion point will be placed after the reference link. If no text is selected, the insertion point will be placed between the empty brackets for the linked text.
-	
-This is enabled by default, but can be easily disabled (see "Configuration Options" below.) 
-
 The only action currently supported is the following:
 
 1. r - Reveal the tab containing the url, because sometimes you just want to find a tab.
+
+#### Markdown Links in BBEdit
+Thanks to superb AppleScript support, creating Markdown links is even more streamlined when using this script with BBEdit. This is enabled by default, but can be easily disabled via configuration (see "Configuration Options" below.) The added BBEdit support has several benefits:
+
+- Automatic Markdown detection -- Links will automatically be formatted with Markdown in documents that BBEdit identifies as Markdown. No template code required.
+- Uses selected text for links -- Links will use the current selection for linked text, when provided. Empty brackets will be used otherwise.
+- Sensible insertion point placement -- When text is selected, the insertion point will be placed after the link so you can continue writing. When no text is selected, the insertion point will be placed between the empty brackets created so you can provide the linked text.
+- Supports both inline and reference style links -- Links can either be added right after the linked text or elsewhere in the document using a reference. When using reference style links, the script can be configured to add them to the end of the document or to the end of the paragraph currently being edited. 
 
 ## Instructions
 1. Copy the JavaScript file into your desired scripts folder.
@@ -58,27 +57,40 @@ The only action currently supported is the following:
 ## Configuration Options
 You can configure `Find and Paste URL from Browser.scpt` by opening it Script Editor. The following options are available.
 
-<table>
+<table border="1">
 <tr>
 	<th>Name</th>
 	<th>Description</th>
-	<th>Options</th>
+	<th colspan="2">Options</th>
 </tr>
-<tr>
-	<td><pre>browserConfig</pre></td>
-	<td>Which browser to use.</td>
-	<td><pre>browserConfigs.safari (default)</pre><pre>browserConfigs.chrome</pre></td>
+<tr valign="top">
+	<td rowspan="3"><pre>browserConfig</pre></td>
+	<td rowspan="3">Which browser to find links from</td>
+	<tr valign="top"><td><pre>browserConfigs.safari</pre></td><td>Safari (default)</td></tr>
+	<tr valign="top"><td><pre>browserConfigs.chrome</pre></td><td>Google Chrome</td></tr>
 </tr>
-<tr>
-	<td><pre>useReferenceStyleMarkdownLinksInBBEdit</pre></td>
-	<td>Enables reference-style links in BBEdit.</td>
-	<td><pre>true (default)</pre><pre>false</pre></td>
+<tr valign="top">
+	<td rowspan="3"><pre>enableBBEditFeatures</pre></td>
+	<td rowspan="3">Enable BBEdit specific features</td>
+	<tr valign="top"><td><pre>true</pre></td><td>Enabled (default)</td></tr>
+	<tr valign="top"><td><pre>false</pre></td><td>Disabled</td></tr>
+</tr>
+<tr valign="top">
+	<td rowspan="4"><pre>BBEditMarkdownLinkLocation</pre></td>
+	<td rowspan="4">Where Markdown links should be added</td>
+	<tr valign="top"><td><pre>'END_OF_DOCUMENT'</pre></td><td>Creates a reference style link at the end of the document (default)</td></tr>
+	<tr valign="top"><td><pre>'END_OF_PARAGRAPH'</pre></td><td>Creates a reference style link at the end of the paragraph</td></tr>
+	<tr valign="top"><td><pre>'INLINE'</pre></td><td>Creates an inline link</td></tr>
 </tr>
 </table>
 
 ## Updates
+### 2021-06-18
+* Supported placing reference style Markdown links at the bottom of paragraphs in BBEdit
+* Improved supported for inline Markdown links in BBEdit
+	
 ### 2021-03-19
-* Added support for reference-style markdown links when using BBEdit.
+* Added support for reference-style Markdown links when using BBEdit.
 * Removed the need for a space for format and action codes when there is no other input. 
 
 ## Disclaimer
