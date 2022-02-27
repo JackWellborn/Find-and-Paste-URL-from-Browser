@@ -85,6 +85,12 @@ You can configure `Find and Paste URL from Browser.scpt` by opening it Script Ed
 </table>
 
 ## Updates
+### 2022-02-27
+* Seeing as I found myself simply grabbing the URL from the current tab most of the time, that is now the default input.
+* Deleting that new default to use blank input now displays a list of all currently open urls with the one from the current tab selected. This may prove faster for quickly pasting urls from tabs relatively close to the current one.
+* I cleaned up some issues where canceling would still continue the process and/or lead to "invalid input" feedback.
+* Finally, I improved adding reference-style links to the bottom of BBEdit documents. Now the first reference-style link will prepend empty lines so as to visually separate them from content.
+
 ### 2021-06-18
 * Supported placing reference style Markdown links at the bottom of paragraphs in BBEdit
 * Improved supported for inline Markdown links in BBEdit
