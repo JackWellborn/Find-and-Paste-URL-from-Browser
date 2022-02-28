@@ -10,15 +10,16 @@ There are five ways to find URLs to paste, each of which can be broken into two 
 #### I need the URL from _that_ Tab.
 I can't tell you how many times I am writing some sort of email or blog post only to find that I need the url from _that_ tab. Y'know _that_ one. Sometimes it's the current tab I was just browsing. Sometimes it's the one next the current tab, usually because the thing I am writing in is the current tab. You've been there. The syntax below gets and pastes _that__ URL.
 
-1. No input will paste the URL of the current tab in the frontmost window.
+1. The default input will paste the URL of the current tab in the frontmost window.
 2. Numbers will paste the URL of a tab near the current tab in the frontmost window (e.g. "-1" for one tab left or "2" for two tabs right.)
 
 #### I need the URL from some tab that I am pretty sure is still open... somewhere.
 I also can't tell you how many times I am writing something only to find that I need to link to some URL that I know was open this morning. Or maybe it was yesterday? Anyways, you get the idea. The following searches tabs from all windows. You can choose which URL to paste when multiple results are found, but a single result will be immediately pasted (as if you knew where it was all along.)
 
-1. Numbers preceded by "=" will get URLs from tabs by index (e.g. "=1"  for the first tabs and "=-2" for the second to last tabs.)
-2. Text will get URLs from tabs with titles containing that text.
-3. Domains will get URLs from tabs with locations containing that domain.
+1. An empty input will display a list of all currently open urls with the one from the current tab selected.
+2. Numbers preceded by "=" will get URLs from tabs by index (e.g. "=1"  for the first tabs and "=-2" for the second to last tabs.)
+3. Text will get URLs from tabs with titles containing that text.
+4. Domains will get URLs from tabs with locations containing that domain.
 
 ### Templates and Actions
 In addition to returning just the URL, this script can also return links formatted using a predefined template or perform an action. To use a template or action, append ` .` (space period) followed by a code below. When using a template, the script will also default to using the URL as the linked text. For example, "duckduckgo.com .h" will return `<a href="https://duckduckgo.com/">https://duckduckgo.com/</a>`). The script then attempts to select the URL in the linked text so it can be easily replaced with something more descriptive. 
