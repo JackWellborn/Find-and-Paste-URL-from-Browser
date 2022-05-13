@@ -1,5 +1,7 @@
+![Demonstration Video](https://github.com/JackWellborn/Find-and-Paste-URL-from-Browser/blob/master/Find%20and%20Paste%20URL%20from%20Browser.gif?raw=true "Demonstration Video")
+
 # Find and Paste URL from Browser
-A script to quickly paste a given url from Safari or Google Chrome (Firefox does not have a scripting dictionary 😢).
+A script to quickly paste a given url from Safari or Chrome (Firefox does not have a scripting dictionary 😢).
 
 ## Introduction
 The script below uses Mac OS's JavaScript for Automation to retrieve the url from a tab (or tabs) in Safari or Chrome based on the input provided. It's based on my [TextExpander-Find-URL](https://github.com/JackWellborn/TextExpander-Find-URL) project, which you can read about more about [here](http://wormsandviruses.com/2018/07/textexpander-snippets-with-variables/). This script based solution has proven more reliable, much simpler, and just as convenient when paired with [Red Sweater's FastScripts](https://red-sweater.com/fastscripts/). 
