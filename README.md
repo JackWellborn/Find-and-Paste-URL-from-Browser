@@ -87,6 +87,9 @@ You can configure `Find and Paste URL from Browser.scpt` by opening it Script Ed
 
 ## Updates
 ### 2022-02-27
+* Added implicit link support when using Markdown in BBEdit wherein the selected text will be used as the reference id. If the selected text is already being used as a reference id, it appends an incremented number and prompts the writer to change if they want to. If there is no selected text, it uses `ref(-n)` as default and also prompts the writer to change if they want to. 
+
+### 2022-02-27
 * Seeing as I found myself simply grabbing the URL from the current tab most of the time, that is now the default input.
 * Deleting that new default to use blank input now displays a list of all currently open urls with the one from the current tab selected. This may prove faster for quickly pasting urls from tabs relatively close to the current one.
 * I cleaned up some issues where canceling would still continue the process and/or lead to "invalid input" feedback.
