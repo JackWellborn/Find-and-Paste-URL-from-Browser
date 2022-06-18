@@ -248,7 +248,7 @@ function run() {
 					let format = formats[0];
 					
 					if (typeof url === "undefined" || !url) {
-						alertError(`No URL found.`, `Well… they can't all be gems.`, `Try Again`, dialog.textReturned);
+						alertError(`No URL found.`, `Well‚Ä¶ they can't all be gems.`, `Try Again`, dialog.textReturned);
 
 					}
 					if (bbEditMarkdown) { 
@@ -338,27 +338,27 @@ function run() {
 		let dialog = app.displayDialog(`Find and Paste URL from ${browserConfig.name}`, {
 			// withTitle:`Find and Paste URL from ${browserConfig.name}`,
 			defaultAnswer: syntax,
-			buttons: ["Help…", "Cancel", "Paste URL"],
+			buttons: ["Help‚Ä¶", "Cancel", "Paste URL"],
 			cancelButton: "Cancel",
 			defaultButton: "Paste URL"
 		});
-		if (dialog.buttonReturned === "Help…") {
+		if (dialog.buttonReturned === "Help‚Ä¶") {
 			const examples = [
-				{ label: '…the current tab in frontmost window (empty)', syntax: '' },
-				{ label: '…the tab left of that current tab formatted in Markdown', syntax: '-1 .m' },
-				{ label: '…the tab two to the right of the current tab formatted in HTML', syntax: '2 .h' },
-				{ label: '…a first tab formatted in JIRA', syntax: '=1 .j' },
-				{ label: '…a second to last tab, but reveal instead of paste', syntax: '=-2 .r' },
-				{ label: '…a tab with the word "News" in its title', syntax: 'News' },
-				{ label: '…a tab with an address containing "duckduckgo.com"', syntax: 'duckduckgo.com' },
+				{ label: '‚Ä¶the current tab in frontmost window (empty)', syntax: '' },
+				{ label: '‚Ä¶the tab left of that current tab formatted in Markdown', syntax: '-1 .m' },
+				{ label: '‚Ä¶the tab two to the right of the current tab formatted in HTML', syntax: '2 .h' },
+				{ label: '‚Ä¶a first tab formatted in JIRA', syntax: '=1 .j' },
+				{ label: '‚Ä¶a second to last tab, but reveal instead of paste', syntax: '=-2 .r' },
+				{ label: '‚Ä¶a tab with the word "News" in its title', syntax: 'News' },
+				{ label: '‚Ä¶a tab with an address containing "duckduckgo.com"', syntax: 'duckduckgo.com' },
 				{ label: 'Just show me the full documentation', syntax: '' }
 			];
 			let examplesList = [];
 			examples.forEach(example => examplesList.push(example.label));
 			let showMe = app.chooseFromList(examplesList, {
 				withTitle: 'Help',
-				withPrompt: 'Show me the syntax to paste the URL from…',
-				defaultItems: ['…the current tab in frontmost window'],
+				withPrompt: 'Show me the syntax to paste the URL from‚Ä¶',
+				defaultItems: ['‚Ä¶the current tab in frontmost window'],
 			});
 			let selectedSyntax = '';
 			if (showMe) {
