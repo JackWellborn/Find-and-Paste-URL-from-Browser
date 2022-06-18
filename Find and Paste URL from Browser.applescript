@@ -126,7 +126,7 @@ function run() {
 					let format = formats[0];
 					
 					if (typeof url === "undefined" || !url) {
-						alertError(`No URL found.`, `Well… they can't all be gems.`, `Try Again`, dialog.textReturned);
+						alertError(`No URL found.`, `Well‚Ä¶ they can't all be gems.`, `Try Again`, dialog.textReturned);
 
 					}
 					if (bbEditMarkdown) { 
