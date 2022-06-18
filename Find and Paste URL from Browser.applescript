@@ -56,54 +56,6 @@ function run() {
 		return tabList;
 	}
 	
-	const getTabByAbsoluteIndex = (query) => {
-		let index, urls=[];
-		browser.windows().forEach((window) => {
-			if (query <= window.tabs.length) {
-				if ( query < 0 ) {
-					index = window.tabs().length + query;
-				} else {
-					index = query - 1;
-				}
-				urls.push(window.tabs[index].url());
-			}
-		});
-		return urls;
-	}
-
-	const getTabByRelativeIndex = (query) => {
-		let currentTabIndex = browserConfig === browserConfigs.safari ? 
-			browser.windows[0].currentTab().index() : 
-			browser.windows[0].activeTabIndex();
-		let relativeTabIndex = currentTabIndex-1 + query;
-		if (relativeTabIndex >= browser.windows[0].tabs().length) {
-			relativeTabIndex = relativeTabIndex - browser.windows[0].tabs().length;
-		}
-		return [browser.windows[0].tabs[relativeTabIndex].url()];
-	}
-
-	const getTabsWithUrlsThatContain = (query) => {
-		let urls = [];
-		browser.windows().forEach((window) => {
-			let tabs = window.tabs.whose({ url:{ _contains: query }});
-			tabs().forEach(function(tab) {
-				urls.push(tab.url());
-			});
-		});
-		return urls;
-	}
-
-	const getTabsWithTitlesThatContain = (query) => {
-		let titles = [];
-		browser.windows().forEach((window) => {
-			let tabs = window.tabs.whose({ name:{ _contains: query }});
-			tabs().forEach(function(tab) {
-				titles.push(tab.url());
-			});
-		});
-		return titles;
-	}
-	
 	var getTitleFromUrl = (url) => {
 		let tabsWithMatchingUrls = [];
 		browser.windows().forEach((window) => {
@@ -114,100 +66,21 @@ function run() {
 		});
 		return tabsWithMatchingUrls[0].name();
 	}
-	
-	let formatCode = 'none';
-	let formatSignifier = ' .';
-	let formatTemplates = [
-		{ name: 'markdown', code: 'm', template: '[{TEXT}]({URL})' },
-		{ name: 'jira', code: 'j', template: '[{TEXT}|{URL}]' },
-		{ name: 'html', code: 'h', template: '<a href="{URL}">{TEXT}</a>' },
-		{ name: 'reveal', code: 'r', template: '', action: (url) => {
-			browser.windows().forEach((win, w) => {
-				for(let t=0; t < win.tabs().length; t++){
-					if (win.tabs[t].url() === url) {
-						matchingTab = win.tabs[t];
-						matchingTabIndex = t;
-						if ( browserConfig.name === 'Safari' ) {
-							let tab = win.tabs.whose({ url: url })[0];
-							win.currentTab = tab;
-						} else {		
-							win.activeTabIndex = matchingTabIndex+1;
-						}
-						browser.activate();
-						process.windows[w].actions['AXRaise'].perform();
-						break;
-					}
-				}
-			});
-		}}
-	];
 
-	const runQuery = (input) => {
-		input = input.toString();
-	
-		formatTemplates.forEach((format) => {
-			input = input[0] === '.' ? ' ' + input : input;
-			let formatRegExp = new RegExp(formatSignifier + format.code + '$');
-			if (formatRegExp.test(input)) {
-				let inputArr = input.split(formatSignifier);
-				console.log(inputArr);
-				formatCode = inputArr.pop();
-				console.log(inputArr.length);
-				input = inputArr.join(formatSignifier);
-			}
+	const getUserSelectedURL = () => {
+		let currentTabURL = currentTab.url();
+		let tabURLs = getAllTabs().map(tab => tab.url).filter(tabUrl => Boolean(tabUrl));
+		
+		let showTabs = app.chooseFromList(tabURLs, {
+			withTitle: 'Select URL',
+			withPrompt: 'Select the tab with the desired URL.',
+			defaultItems: [currentTabURL]
 		});
-	
-		let fullQuery = input;
-		let queryCharacter = fullQuery.charAt(0);
-		let	queryParameter =  fullQuery.substring(1);
-		const queryCharacters = ['='];
-	
-		let url, urls = [];
-	
-		if (fullQuery === currentTab.url()) {
-			urls = [currentTab.url()];
-		} else if (fullQuery && !isNaN(fullQuery)) {
-			urls = getTabByRelativeIndex(parseInt(fullQuery, 10));
-		} else if (queryCharacters.indexOf(queryCharacter) >= 0) {
-			switch(queryCharacter) {
-				case "=":
-					urls = getTabByAbsoluteIndex(parseInt(queryParameter, 10));
-					break;
-			}
-		} else if (/^((?!-))(xn--)?[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]{0,1}\.(xn--)?([a-z0-9\-]{1,61}|[a-z0-9-]{1,30}\.[a-z]{2,})$/.test(fullQuery)) {
-			urls = getTabsWithUrlsThatContain(fullQuery);
-		} else if (fullQuery.length > 0) {
-			urls = getTabsWithTitlesThatContain(fullQuery);
+		if (showTabs) {
+			return showTabs[0];
 		} else {
-			let currentTabURL = currentTab.url();
-			let tabURLs = getAllTabs().map(tab => tab.url).filter(tabUrl => Boolean(tabUrl));
-			
-			let showTabs = app.chooseFromList(tabURLs, {
-				withTitle: 'Select URL',
-				withPrompt: 'Select the tab with the desired URL.',
-				defaultItems: [currentTabURL]
-			});
-			if (showTabs) {
-				return showTabs[0];
-			} else {
-				return false;
-			}
+			return false;
 		}
-	
-		if(urls.length > 1) {
-			let choice = app.chooseFromList(urls, {
-				withTitle:"Multiple Matching URLs Found",
-				withPrompt:"Select the desired matching URL",
-				okButtonName:"Paste URL",
-				cancelButton:"Cancel"});
-			
-			if(choice){
-				url = choice.toString();
-			} 
-		} else {
-			url = urls[0];
-		}
-		return url;
 	}
 
 	function pasteURL(url){
@@ -238,6 +111,11 @@ function run() {
 	
 	const writeUrl = (url) => {
 			if (url) {
+				let formatTemplates = [
+					{ name: 'markdown', code: 'm', template: '[{TEXT}]({URL})' },
+					{ name: 'jira', code: 'j', template: '[{TEXT}|{URL}]' },
+					{ name: 'html', code: 'h', template: '<a href="{URL}">{TEXT}</a>' }
+				];
 				let bbEditMarkdown = (enableBBEditFeatures && app.name() === "BBEdit") && (app.textWindows.at(0).sourceLanguage() === 'Markdown');
 				let formats = bbEditMarkdown ? ['Markdown'] : app.chooseFromList(['Plain Text', 'Markdown', 'HTML'], {
 					withTitle: 'Select Formatting',
@@ -248,7 +126,7 @@ function run() {
 					let format = formats[0];
 					
 					if (typeof url === "undefined" || !url) {
-						alertError(`No URL found.`, `Well… they can't all be gems.`, `Try Again`, dialog.textReturned);
+						alertError(`No URL found.`, `Well� they can't all be gems.`, `Try Again`, dialog.textReturned);
 
 					}
 					if (bbEditMarkdown) { 
@@ -323,8 +201,6 @@ function run() {
 							for (let j = 0; j < url.length; j++) {
 								system.keyCode(123, {using:'shift down'});
 							}
-						} else if (formatting.action && typeof formatting.action === 'function') {
-							formatting.action(url);
 						}
 					} else {
 						pasteURL(url);
@@ -334,47 +210,8 @@ function run() {
 
 	}
 
-	const openDialog = (syntax=currentTab.url()) => {
-		let dialog = app.displayDialog(`Find and Paste URL from ${browserConfig.name}`, {
-			// withTitle:`Find and Paste URL from ${browserConfig.name}`,
-			defaultAnswer: syntax,
-			buttons: ["Help…", "Cancel", "Paste URL"],
-			cancelButton: "Cancel",
-			defaultButton: "Paste URL"
-		});
-		if (dialog.buttonReturned === "Help…") {
-			const examples = [
-				{ label: '…the current tab in frontmost window (empty)', syntax: '' },
-				{ label: '…the tab left of that current tab formatted in Markdown', syntax: '-1 .m' },
-				{ label: '…the tab two to the right of the current tab formatted in HTML', syntax: '2 .h' },
-				{ label: '…a first tab formatted in JIRA', syntax: '=1 .j' },
-				{ label: '…a second to last tab, but reveal instead of paste', syntax: '=-2 .r' },
-				{ label: '…a tab with the word "News" in its title', syntax: 'News' },
-				{ label: '…a tab with an address containing "duckduckgo.com"', syntax: 'duckduckgo.com' },
-				{ label: 'Just show me the full documentation', syntax: '' }
-			];
-			let examplesList = [];
-			examples.forEach(example => examplesList.push(example.label));
-			let showMe = app.chooseFromList(examplesList, {
-				withTitle: 'Help',
-				withPrompt: 'Show me the syntax to paste the URL from…',
-				defaultItems: ['…the current tab in frontmost window'],
-			});
-			let selectedSyntax = '';
-			if (showMe) {
-				if ( showMe[0] === 'Just show me the full documentation' ) {
-					browser.openLocation('https://github.com/JackWellborn/Find-and-Paste-URL-from-Browser/blob/master/README.md');
-				} else {
-					selectedSyntax = examples.find(example => example.label === showMe[0]).syntax;
-					openDialog(selectedSyntax);
-				}
-			} else {
-				openDialog(selectedSyntax);
-			}
-		} else if (dialog.buttonReturned === "Paste URL") {
-			let url = runQuery(dialog.textReturned);
-			writeUrl(url);
-		}
-	};
-	openDialog();
+	let url = getUserSelectedURL();
+	if (url) {
+		writeUrl(url);
+	}
 }
