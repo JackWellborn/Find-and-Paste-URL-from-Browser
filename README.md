@@ -1,5 +1,6 @@
 # Find and Paste URL from Browser
 A script to quickly paste a given url from Safari or Chrome (Firefox does not have a scripting dictionary 😢).
+
 ![Demonstration Video](https://raw.githubusercontent.com/JackWellborn/Find-and-Paste-URL-from-Browser/master/Find%20and%20Paste%20URL%20from%20Browser.gif "Demonstration Video")
 
 ## Introduction
@@ -15,9 +16,6 @@ Thanks to superb AppleScript support, creating Markdown links are streamlined wh
 - Uses selected text for links -- Links will use the current selection for linked text, when provided. Empty brackets will be used otherwise.
 - Supports both inline and reference style links -- Links can either be added right after the linked text or elsewhere in the document using a reference. When using reference style links, the script can be configured to add them to the end of the document or to the end of the paragraph currently being edited. 
 - Sensible insertion point placement in BBEdit -- When text is selected, the insertion point will be placed after the link so you can continue writing. When no text is selected, the insertion point will be placed between the empty brackets created so you can provide the linked text. This is only available in BBEdit as MarsEdit does not yet surface the insertion point offset information in AppleScript.
-
-#### FastScripts Example
-https://github.com/JackWellborn/Find-and-Paste-URL-from-Browser/assets/21010090/5dfaf0f7-7471-477f-8dc2-07f5af7b377c
 
 #### Keyboard Maestro Example
 https://github.com/JackWellborn/Find-and-Paste-URL-from-Browser/assets/21010090/92a6cbd4-e454-4cca-8c04-1b4dbb904c4d
