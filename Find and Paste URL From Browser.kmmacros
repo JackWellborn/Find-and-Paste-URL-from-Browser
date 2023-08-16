@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>Activate</key>
+		<string>Normal</string>
+		<key>CreationDate</key>
+		<real>639100811.71494997</real>
+		<key>Macros</key>
+		<array>
+			<dict>
+				<key>Actions</key>
+				<array>
+					<dict>
+						<key>ActionUID</key>
+						<integer>834010</integer>
+						<key>MacroActionType</key>
+						<string>SetVariableToText</string>
+						<key>Text</key>
+						<string>Safari</string>
+						<key>Variable</key>
+						<string>BrowserName</string>
+					</dict>
+					<dict>
+						<key>ActionUID</key>
+						<integer>833635</integer>
+						<key>DisplayKind</key>
+						<string>Variable</string>
+						<key>HonourFailureSettings</key>
+						<true/>
+						<key>IncludeStdErr</key>
+						<false/>
+						<key>MacroActionType</key>
+						<string>ExecuteJavaScriptForAutomation</string>
+						<key>Path</key>
+						<string></string>
+						<key>Text</key>
+						<string>function run() {
+	let km = Application.currentApplication()
+	km.includeStandardAdditions = true
+ 
+	let kmInst = km.systemAttribute("KMINSTANCE");
+	let kmeApp = Application("Keyboard Maestro Engine")
+ 
+	let browserName = kmeApp.getvariable("BrowserName",  {instance: kmInst});
+    let browser = Application(browserName);
+	let currentTab = (browser.name().indexOf("Safari") &gt; -1) ? 
+		browser.windows[0].currentTab() :
+		browser.windows[0].activeTab;
+	return currentTab.name() + " —— " + currentTab.url();
+}</string>
+						<key>TimeOutAbortsMacro</key>
+						<true/>
+						<key>TrimResults</key>
+						<true/>
+						<key>TrimResultsNew</key>
+						<true/>
+						<key>UseText</key>
+						<true/>
+						<key>Variable</key>
+						<string>CurrentTab</string>
+					</dict>
+					<dict>
+						<key>ActionUID</key>
+						<integer>833259</integer>
+						<key>DisplayKind</key>
+						<string>Variable</string>
+						<key>HonourFailureSettings</key>
+						<true/>
+						<key>IncludeStdErr</key>
+						<false/>
+						<key>MacroActionType</key>
+						<string>ExecuteJavaScriptForAutomation</string>
+						<key>Path</key>
+						<string></string>
+						<key>Text</key>
+						<string>function run() {
+	let km = Application.currentApplication()
+	km.includeStandardAdditions = true
+ 
+	let kmInst = km.systemAttribute("KMINSTANCE");
+	let kmeApp = Application("Keyboard Maestro Engine")
+ 
+	let browserName = kmeApp.getvariable("BrowserName",  {instance: kmInst});
+    let browser = Application(browserName);
+	let tabs = [];
+
+	for (let windex=0; windex &lt; browser.windows.length; windex++) {
+		let win = browser.windows[windex];
+		for (let index=0; index &lt; win.tabs.length; index++) {	
+			tab = win.tabs[index];
+			tabs.push({
+				window: windex,
+				tab: index,
+				name: tab.name(),
+				location: tab.url()
+			});
+		}
+	}
+
+	var stringTabs = [];
+	for(let i = 0; i &lt; tabs.length; i++) {
+		stringTabs.push(tabs[i].name + " —— " + tabs[i].location);
+	}
+	return stringTabs.join('\n ');
+}</string>
+						<key>TimeOutAbortsMacro</key>
+						<true/>
+						<key>TrimResults</key>
+						<true/>
+						<key>TrimResultsNew</key>
+						<true/>
+						<key>UseText</key>
+						<true/>
+						<key>Variable</key>
+						<string>Result</string>
+					</dict>
+					<dict>
+						<key>ActionUID</key>
+						<integer>833260</integer>
+						<key>InitialSearch</key>
+						<string>%Variable%CurrentTab%</string>
+						<key>MacroActionType</key>
+						<string>PromptWithList</string>
+						<key>PromptUID</key>
+						<string>A5FF9395-4047-49BB-9F14-C37F8ADC1CFB</string>
+						<key>Sort</key>
+						<false/>
+						<key>Source</key>
+						<string>Variable</string>
+						<key>TimeOutAbortsMacro</key>
+						<true/>
+						<key>Variable</key>
+						<string>Result</string>
+						<key>WindowTitle</key>
+						<string>Choose Tab</string>
+					</dict>
+					<dict>
+						<key>Action</key>
+						<string>IgnoreCaseRegEx</string>
+						<key>ActionUID</key>
+						<integer>834387</integer>
+						<key>Destination</key>
+						<string>Variable</string>
+						<key>DestinationVariable</key>
+						<string>Local__name</string>
+						<key>MacroActionType</key>
+						<string>SearchReplace</string>
+						<key>Replace</key>
+						<string>\1</string>
+						<key>Search</key>
+						<string>(.+) —— (.+)</string>
+						<key>Source</key>
+						<string>Variable</string>
+						<key>Variable</key>
+						<string>Result</string>
+						<key>Which</key>
+						<string>All</string>
+					</dict>
+					<dict>
+						<key>Action</key>
+						<string>IgnoreCaseRegEx</string>
+						<key>ActionUID</key>
+						<integer>832498</integer>
+						<key>Destination</key>
+						<string>Variable</string>
+						<key>DestinationVariable</key>
+						<string>Local__url</string>
+						<key>MacroActionType</key>
+						<string>SearchReplace</string>
+						<key>Replace</key>
+						<string>\2</string>
+						<key>Search</key>
+						<string>(.+) —— (.+)</string>
+						<key>Source</key>
+						<string>Variable</string>
+						<key>Variable</key>
+						<string>Result</string>
+						<key>Which</key>
+						<string>All</string>
+					</dict>
+					<dict>
+						<key>ActionUID</key>
+						<integer>834011</integer>
+						<key>DisplayKind</key>
+						<string>None</string>
+						<key>HonourFailureSettings</key>
+						<true/>
+						<key>IncludeStdErr</key>
+						<false/>
+						<key>MacroActionType</key>
+						<string>ExecuteJavaScriptForAutomation</string>
+						<key>Path</key>
+						<string></string>
+						<key>Text</key>
+						<string>function run(input) {
+	let km = Application.currentApplication()
+	km.includeStandardAdditions = true
+ 
+	let kmInst = km.systemAttribute("KMINSTANCE");
+	let kmeApp = Application("Keyboard Maestro Engine")
+ 
+	let url = kmeApp.getvariable("Local__url",  {instance: kmInst});
+    let pageTitle = kmeApp.getvariable("Local__name",  {instance: kmInst});
+
+	const enableMarkdownFeatures = true;
+	const MarkdownLinkLocation = 'END_OF_DOCUMENT' // Where the link should be located ('END_OF_DOCUMENT', 'END_OF_PARAGRAPH', or 'INLINE').
+	
+	let system = Application("System Events");
+	system.includeStandardAdditions = true;
+
+	//For whatever reason this works wheres currentApplication does not.
+	let app = Application(system.processes.where({_and:[{visible:true},{frontmost:true}]})[0].displayedName());
+	app.includeStandardAdditions = true;
+
+	function pasteURL(url){
+		let savedClipboard = app.theClipboard();
+		app.setTheClipboardTo(url);
+		system.keystroke('v',{using:["command down"]});
+		delay(.5);
+		app.setTheClipboardTo(savedClipboard);
+	}
+	
+	const writeUrl = (url) =&gt; {
+		if (url) {
+			let bbEditMarkdown = (app.name() === "BBEdit" &amp;&amp; app.textWindows.at(0).sourceLanguage() === 'Markdown');
+			let marsEditMarkdown = (app.name() === "MarsEdit");
+			
+			if (marsEditMarkdown) {
+				delay(.5); //Weird race condition with MarsEdit
+			}
+					
+			if (enableMarkdownFeatures &amp;&amp; (bbEditMarkdown || marsEditMarkdown)) { 
+				let window = app.windows()[0];
+
+				let selectedText, markdownLinkText, originalOffset = 0, newOffset = 0;
+				selectedText = markdownLinkText = bbEditMarkdown ? window.selection.contents().toString() : window.document().selectedText();
+				
+				if (bbEditMarkdown) { // MarsEdit doesn't provide text offsets
+					originalOffset = newOffset = window.selection.characteroffset();
+				}
+				
+				if (MarkdownLinkLocation === 'INLINE') {
+					markdownLinkText = selectedText.length ? selectedText.replace(/(.+)/g, '[$1](' + url + ')') : '[](' + url + ')';
+					if (bbEditMarkdown) {
+						newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
+						window.selection.contents = markdownLinkText;
+					} else {
+						window.document().selectedText = markdownLinkText;
+					}
+					return;
+				} else {
+					let bodyText, updatedText;
+					bodyText = updatedText = bbEditMarkdown ? window.text() : window.document().body();
+					
+					let referenceName = selectedText.length ? selectedText : 'ref';
+					let referenceNameRegExp = new RegExp('\n\['+ referenceName +'[0-9\-]*\]\:','g');
+							
+					let referenceAnchor = '[]';
+					let referenceNameCount = 0;
+					let referenceNameOccurences = bodyText.match(referenceNameRegExp);
+					if (referenceNameOccurences) {
+						referenceName = referenceName + '-' + (referenceNameOccurences.length + 1);
+					}
+					if (referenceNameOccurences || !selectedText.length) {
+						let nameDialog = app.displayDialog(`What reference name would you like to use for "${pageTitle}"?`, {
+							defaultAnswer: referenceName,
+							buttons: ["Cancel", "Use Reference Name"],
+							cancelButton: "Cancel",
+							defaultButton: "Use Reference Name"
+						});
+						referenceName = nameDialog.textReturned;
+						referenceAnchor = '[' + referenceName + ']';
+					}
+							
+					markdownLinkText = selectedText.length ? selectedText.replace(/(.+)/g, '[$1]'+ referenceAnchor) : '[]' + referenceAnchor;
+					if (bbEditMarkdown) {
+						newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
+						window.selection.contents = markdownLinkText;
+					} else {
+						window.document().selectedText = markdownLinkText;
+					}
+					bodyText = updatedText = bbEditMarkdown ? window.text() : window.document().body();
+					let prependedExtraLineBreak = '\n\n';
+					if (/\n\s*$/.test(bodyText)) {
+						prependedExtraLineBreak = '';
+					}
+					bodyText = updatedText = bodyText + prependedExtraLineBreak;
+					if (MarkdownLinkLocation === 'END_OF_PARAGRAPH') {
+						let paragraphBreakRegexp = /\n\n+/g;
+						let paragraphBreakRegexpResult;
+						while ((paragraphBreakRegexpResult = paragraphBreakRegexp.exec(bodyText)) !== null) {
+							if (paragraphBreakRegexp.lastIndex &gt;= bodyText.indexOf(markdownLinkText)) {
+								updatedText = bodyText.slice(0, paragraphBreakRegexpResult.index) + '\n[' + referenceName + ']: ' + url + paragraphBreakRegexpResult[0] + bodyText.slice(paragraphBreakRegexp.lastIndex);
+								break;
+							}
+						}
+					} else {
+						updatedText = bodyText + '[' + referenceName + ']: ' + url + '\n';
+					}
+					if (updatedText !== bodyText) {
+						if (bbEditMarkdown) {
+							window.text = updatedText;
+						} else {
+							window.document().body = updatedText;
+						}
+					}
+				}
+				if (bbEditMarkdown) {
+					app.select(window.characters.at(newOffset).insertionPoints.at(0));
+				}
+			} else {
+				pasteURL(url);
+			}
+		}
+	}
+
+	if (url) {
+		writeUrl(url);
+	}
+}
+</string>
+						<key>TimeOutAbortsMacro</key>
+						<true/>
+						<key>TrimResults</key>
+						<true/>
+						<key>TrimResultsNew</key>
+						<true/>
+						<key>UseText</key>
+						<true/>
+					</dict>
+				</array>
+				<key>CreationDate</key>
+				<real>669835197.44253802</real>
+				<key>CustomIconData</key>
+				<string>KMEP-GenericApplication-/Applications/Safari.app</string>
+				<key>ModificationDate</key>
+				<real>713910105.51262295</real>
+				<key>Name</key>
+				<string>Find and Paste URL From Browser</string>
+				<key>Triggers</key>
+				<array>
+					<dict>
+						<key>FireType</key>
+						<string>Pressed</string>
+						<key>KeyCode</key>
+						<integer>3</integer>
+						<key>MacroTriggerType</key>
+						<string>HotKey</string>
+						<key>Modifiers</key>
+						<integer>4096</integer>
+					</dict>
+				</array>
+				<key>UID</key>
+				<string>9C94BF45-5009-4016-A757-619E09E52563</string>
+			</dict>
+		</array>
+		<key>Name</key>
+		<string>Global Macro Group</string>
+		<key>ToggleMacroUID</key>
+		<string>FB397B95-F152-429C-B8D9-14DEBA43266B</string>
+		<key>UID</key>
+		<string>7E9BB46C-1AC3-430F-A6E4-342000E16627</string>
+	</dict>
+</array>
+</plist>
