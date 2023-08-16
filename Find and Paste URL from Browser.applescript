@@ -111,6 +111,8 @@ function run() {
 	const writeUrl = (url) => {
 		if (url) {
 			let bbEditMarkdown = (enableBBEditFeatures && app.name() === "BBEdit") && (app.textWindows.at(0).sourceLanguage() === 'Markdown');
+			
+			let marsEditMarkdown = (app.name() === "MarsEdit");
 				
 			if (bbEditMarkdown) { 
 				let window = app.windows()[0];
@@ -169,7 +171,18 @@ function run() {
 					}
 				}
 				app.select(window.characters.at(newOffset).insertionPoints.at(0));
-			} else {
+			} else if (marsEditMarkdown && app.windows.at(0).document().selectedText().length > 0) {
+				let selectedText = app.windows.at(0).document().selectedText();
+				app.windows.at(0).document().selectedText = `[${selectedText}][]`;
+				
+				let body = app.windows.at(0).document().body();
+				let prependedExtraLineBreak = '\n\n';
+				if (/\n\s*$/.test(body)) {
+					prependedExtraLineBreak = '';
+				}
+				app.windows.at(0).document().body = body + prependedExtraLineBreak + '[' + selectedText + ']: ' + url + '\n';
+			
+		    } else {
 				let formatTemplates = [
 					{ name: 'markdown', code: 'm', template: '[{TEXT}]({URL})' },
 					{ name: 'jira', code: 'j', template: '[{TEXT}|{URL}]' },
