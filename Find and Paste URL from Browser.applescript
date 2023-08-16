@@ -1,6 +1,6 @@
 function run() {
-	const enableBBEditFeatures = true;
-	const BBEditMarkdownLinkLocation = 'END_OF_DOCUMENT' // Where the link should be located ('END_OF_DOCUMENT', 'END_OF_PARAGRAPH', or 'INLINE').
+	const enableMarkdownFeatures = true;
+	const MarkdownLinkLocation = 'END_OF_DOCUMENT' // Where the link should be located ('END_OF_DOCUMENT', 'END_OF_PARAGRAPH', or 'INLINE').
 	const browserConfigs = {
 		chrome: {
 			name: "Google Chrome"
@@ -29,7 +29,6 @@ function run() {
 	let process = processes[0];
 	let browser = Application(process.name());
 	browser.includeStandardAdditions = true;
-
 	if ( browser.windows().length === 0 ) {
 		alertError(`${browserConfig.name} has no open windows.`, `My grandfather once taught me that you can't paste a URL without tab and you can't have a tab without a window.
 	
@@ -110,36 +109,48 @@ function run() {
 	
 	const writeUrl = (url) => {
 		if (url) {
-			let bbEditMarkdown = (enableBBEditFeatures && app.name() === "BBEdit") && (app.textWindows.at(0).sourceLanguage() === 'Markdown');
-			
+			let bbEditMarkdown = (app.name() === "BBEdit" && app.textWindows.at(0).sourceLanguage() === 'Markdown');
 			let marsEditMarkdown = (app.name() === "MarsEdit");
-				
-			if (bbEditMarkdown) { 
+			
+			if (marsEditMarkdown) {
+				delay(.5); //Weird race condition with MarsEdit
+			}
+					
+			if (enableMarkdownFeatures && (bbEditMarkdown || marsEditMarkdown)) { 
 				let window = app.windows()[0];
 				let pageTitle = getTitleFromUrl(url);
 
-				let selectedText, markdownLinkText, originalOffset, newOffset;
-				selectedText = markdownLinkText = window.selection.contents().toString();
-							
-				originalOffset = newOffset = window.selection.characteroffset();
+				let selectedText, markdownLinkText, originalOffset = 0, newOffset = 0;
+				selectedText = markdownLinkText = bbEditMarkdown ? window.selection.contents().toString() : window.document().selectedText();
 				
-				if (BBEditMarkdownLinkLocation === 'INLINE') {
+				if (bbEditMarkdown) { // MarsEdit doesn't provide text offsets
+					originalOffset = newOffset = window.selection.characteroffset();
+				}
+				
+				if (MarkdownLinkLocation === 'INLINE') {
 					markdownLinkText = selectedText.length ? selectedText.replace(/(.+)/g, '[$1](' + url + ')') : '[](' + url + ')';
-					newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
-					window.selection.contents = markdownLinkText;
+					if (bbEditMarkdown) {
+						newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
+						window.selection.contents = markdownLinkText;
+					} else {
+						window.document().selectedText = markdownLinkText;
+					}
+					return;
 				} else {
+					let bodyText, updatedText;
+					bodyText = updatedText = bbEditMarkdown ? window.text() : window.document().body();
+					
 					let referenceName = selectedText.length ? selectedText : 'ref';
 					let referenceNameRegExp = new RegExp('\n\['+ referenceName +'[0-9\-]*\]\:','g');
 							
 					let referenceAnchor = '[]';
 					let referenceNameCount = 0;
-					let referenceNameOccurences = window.text().match(referenceNameRegExp);
+					let referenceNameOccurences = bodyText.match(referenceNameRegExp);
 					if (referenceNameOccurences) {
 						referenceName = referenceName + '-' + (referenceNameOccurences.length + 1);
 					}
 					if (referenceNameOccurences || !selectedText.length) {
 						let nameDialog = app.displayDialog(`What reference name would you like to use for "${pageTitle}"?`, {
-							// withTitle:`What reference name would you like to use for "${pageTitle}"?`,
 							defaultAnswer: referenceName,
 							buttons: ["Cancel", "Use Reference Name"],
 							cancelButton: "Cancel",
@@ -150,69 +161,43 @@ function run() {
 					}
 							
 					markdownLinkText = selectedText.length ? selectedText.replace(/(.+)/g, '[$1]'+ referenceAnchor) : '[]' + referenceAnchor;
-					newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
-					window.selection.contents = markdownLinkText;
-					if (BBEditMarkdownLinkLocation === 'END_OF_PARAGRAPH') {
+					if (bbEditMarkdown) {
+						newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
+						window.selection.contents = markdownLinkText;
+					} else {
+						window.document().selectedText = markdownLinkText;
+					}
+					bodyText = updatedText = bbEditMarkdown ? window.text() : window.document().body();
+					let prependedExtraLineBreak = '\n\n';
+					if (/\n\s*$/.test(bodyText)) {
+						prependedExtraLineBreak = '';
+					}
+					bodyText = updatedText = bodyText + prependedExtraLineBreak;
+					if (MarkdownLinkLocation === 'END_OF_PARAGRAPH') {
 						let paragraphBreakRegexp = /\n\n+/g;
 						let paragraphBreakRegexpResult;
-						while ((paragraphBreakRegexpResult = paragraphBreakRegexp.exec(window.text())) !== null) {
-							if (paragraphBreakRegexp.lastIndex >= originalOffset) {
-								let updatedText = window.text().slice(0, paragraphBreakRegexpResult.index) + '\n[' + referenceName + ']: ' + url + paragraphBreakRegexpResult[0] + window.text().slice(paragraphBreakRegexp.lastIndex);
-								window.text = updatedText;
+						while ((paragraphBreakRegexpResult = paragraphBreakRegexp.exec(bodyText)) !== null) {
+							if (paragraphBreakRegexp.lastIndex >= bodyText.indexOf(markdownLinkText)) {
+								updatedText = bodyText.slice(0, paragraphBreakRegexpResult.index) + '\n[' + referenceName + ']: ' + url + paragraphBreakRegexpResult[0] + bodyText.slice(paragraphBreakRegexp.lastIndex);
 								break;
 							}
 						}
 					} else {
-						let prependedExtraLineBreak = '\n\n';
-						if (/\n\s*$/.test(window.text())) {
-							prependedExtraLineBreak = '';
+						updatedText = bodyText + '[' + referenceName + ']: ' + url + '\n';
+					}
+					if (updatedText !== bodyText) {
+						if (bbEditMarkdown) {
+							window.text = updatedText;
+						} else {
+							window.document().body = updatedText;
 						}
-						window.text = window.text() + prependedExtraLineBreak + '[' + referenceName + ']: ' + url + '\n';
 					}
 				}
-				app.select(window.characters.at(newOffset).insertionPoints.at(0));
-			} else if (marsEditMarkdown && app.windows.at(0).document().selectedText().length > 0) {
-				let selectedText = app.windows.at(0).document().selectedText();
-				app.windows.at(0).document().selectedText = `[${selectedText}][]`;
-				
-				let body = app.windows.at(0).document().body();
-				let prependedExtraLineBreak = '\n\n';
-				if (/\n\s*$/.test(body)) {
-					prependedExtraLineBreak = '';
+				if (bbEditMarkdown) {
+					app.select(window.characters.at(newOffset).insertionPoints.at(0));
 				}
-				app.windows.at(0).document().body = body + prependedExtraLineBreak + '[' + selectedText + ']: ' + url + '\n';
-			
-		    } else {
-				let formatTemplates = [
-					{ name: 'markdown', code: 'm', template: '[{TEXT}]({URL})' },
-					{ name: 'jira', code: 'j', template: '[{TEXT}|{URL}]' },
-					{ name: 'html', code: 'h', template: '<a href="{URL}">{TEXT}</a>' }
-				];
-				let formats = app.chooseFromList(['Plain Text', 'Markdown', 'HTML'], {
-						withTitle: 'Select Formatting',
-						withPrompt: 'Select the desired URL format.',
-						defaultItems: bbEditMarkdown ? ['Markdown'] : ['Plain Text']
-					});
-				if (formats) {
-					let format = formats[0];
-					if (format !== 'Plain Text') {
-						let formatting = formatTemplates.find(formatTemplate => formatTemplate.name === format.toLowerCase());
-						if (formatting.template.indexOf('{URL}') >= 0) {
-							let formattedUrl = formatting.template.replace('{URL}', url);
-							let charsToTextInsertion = formattedUrl.split('').reverse().join('').indexOf('}TXET{');
-							formattedUrl = formattedUrl.replace('{TEXT}', url);
-							pasteURL(formattedUrl);
-							for (let i = 0; i < charsToTextInsertion; i++) {
-								system.keyCode(123);
-							}
-							for (let j = 0; j < url.length; j++) {
-								system.keyCode(123, {using:'shift down'});
-							}
-						}
-					} else {
-						pasteURL(url);
-					}
-				}
+			} else {
+				pasteURL(url);
 			}
 		}
 	}
