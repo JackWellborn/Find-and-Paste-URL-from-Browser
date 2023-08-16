@@ -1,12 +1,6 @@
 # Find and Paste URL from Browser
 A script to quickly paste a given url from Safari or Chrome (Firefox does not have a scripting dictionary 😢).
 
-## Using FastScripts, BBEdit, Safari, and Notes
-https://github.com/JackWellborn/Find-and-Paste-URL-from-Browser/assets/21010090/5dfaf0f7-7471-477f-8dc2-07f5af7b377c
-
-## Using Keyboard Maestro, MarsEdit, Chrome, and Notes
-https://github.com/JackWellborn/Find-and-Paste-URL-from-Browser/assets/21010090/92a6cbd4-e454-4cca-8c04-1b4dbb904c4d
-
 ## Introduction
 The script below uses Mac OS's JavaScript for Automation to retrieve the url from a tab (or tabs) in Safari or Chrome based on the input provided. It's based on my [TextExpander-Find-URL](https://github.com/JackWellborn/TextExpander-Find-URL) project, which you can read about more about [here](http://wormsandviruses.com/2018/07/textexpander-snippets-with-variables/). This script based solution has proven more reliable, much simpler, and just as convenient when paired with [Red Sweater's FastScripts](https://red-sweater.com/fastscripts/). 
 
@@ -20,6 +14,12 @@ Thanks to superb AppleScript support, creating Markdown links are streamlined wh
 - Uses selected text for links -- Links will use the current selection for linked text, when provided. Empty brackets will be used otherwise.
 - Supports both inline and reference style links -- Links can either be added right after the linked text or elsewhere in the document using a reference. When using reference style links, the script can be configured to add them to the end of the document or to the end of the paragraph currently being edited. 
 - Sensible insertion point placement in BBEdit -- When text is selected, the insertion point will be placed after the link so you can continue writing. When no text is selected, the insertion point will be placed between the empty brackets created so you can provide the linked text. This is only available in BBEdit as MarsEdit does not yet surface the insertion point offset information in AppleScript.
+
+#### FastScripts Example
+https://github.com/JackWellborn/Find-and-Paste-URL-from-Browser/assets/21010090/5dfaf0f7-7471-477f-8dc2-07f5af7b377c
+
+#### Keyboard Maestro Example
+https://github.com/JackWellborn/Find-and-Paste-URL-from-Browser/assets/21010090/92a6cbd4-e454-4cca-8c04-1b4dbb904c4d
 
 ## Instructions
 
