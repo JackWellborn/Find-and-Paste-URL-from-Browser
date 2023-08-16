@@ -126,9 +126,8 @@ function run() {
 				if (bbEditMarkdown) { // MarsEdit doesn't provide text offsets
 					originalOffset = newOffset = window.selection.characteroffset();
 				}
-				
-				if (MarkdownLinkLocation === 'INLINE') {
-					markdownLinkText = selectedText.length ? selectedText.replace(/(.+)/g, '[$1](' + url + ')') : '[](' + url + ')';
+				if (MarkdownLinkLocation === 'INLINE' || selectedText.length === 0) {
+					markdownLinkText = selectedText.length ? selectedText.replace(/(.+)/g, '[$1](' + url + ')') : '[' + url + '](' + url + ')';
 					if (bbEditMarkdown) {
 						newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
 						window.selection.contents = markdownLinkText;

@@ -18,7 +18,7 @@
 						<key>MacroActionType</key>
 						<string>SetVariableToText</string>
 						<key>Text</key>
-						<string>Safari</string>
+						<string>Safari Technology Preview</string>
 						<key>Variable</key>
 						<string>BrowserName</string>
 					</dict>
@@ -240,9 +240,8 @@
 				if (bbEditMarkdown) { // MarsEdit doesn't provide text offsets
 					originalOffset = newOffset = window.selection.characteroffset();
 				}
-				
-				if (MarkdownLinkLocation === 'INLINE') {
-					markdownLinkText = selectedText.length ? selectedText.replace(/(.+)/g, '[$1](' + url + ')') : '[](' + url + ')';
+				if (MarkdownLinkLocation === 'INLINE' || selectedText.length === 0) {
+					markdownLinkText = selectedText.length ? selectedText.replace(/(.+)/g, '[$1](' + url + ')') : '[' + url + '](' + url + ')';
 					if (bbEditMarkdown) {
 						newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
 						window.selection.contents = markdownLinkText;
@@ -336,7 +335,7 @@
 				<key>CustomIconData</key>
 				<string>KMEP-GenericApplication-/Applications/Safari.app</string>
 				<key>ModificationDate</key>
-				<real>713910105.51262295</real>
+				<real>713915642.37383902</real>
 				<key>Name</key>
 				<string>Find and Paste URL From Browser</string>
 				<key>Triggers</key>
