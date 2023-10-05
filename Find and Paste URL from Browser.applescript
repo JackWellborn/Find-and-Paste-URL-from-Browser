@@ -10,8 +10,9 @@ function run() {
 		}
 	};
 
-	let browserConfig = browserConfigs.safari;
-	// let browserConfig = browserConfigs.chrome;
+	// let browserConfig = browserConfigs.safari;
+	
+	let browserConfig = browserConfigs.chrome;
 
 	let system = Application("System Events");
 	system.includeStandardAdditions = true;
@@ -120,6 +121,30 @@ function run() {
 		return (nodeName === 'textarea' && ariaLabel === 'Comment body');
 	}
 	
+	function getCurrentTextAreaValue() {
+		return executeJavaScriptInCurrentTab('document.activeElement.value;');
+	}
+	
+	function insertTextIntoTextAreaAt(text=``, selectionStart, selectionEnd) {
+		if (!selectionEnd) {
+			selectionEnd = selectionStart;
+		}
+		let script = `(function() {
+			let textArea = document.activeElement;
+			textArea.selectionStart = ${selectionStart};
+			textArea.selectionEnd = ${selectionEnd};`;
+		if(browser.name().indexOf("Safari") > -1) {
+			script = script + `let textEvent = document.createEvent('TextEvent');
+			textEvent.initTextEvent('textInput', true, true, null, \`${text}\`);
+			textArea.dispatchEvent(textEvent);`
+		} else {
+			// Non Standard, but works in Chrome
+			script = script + `document.execCommand( 'insertText', false, \`${text}\`);`;
+		}
+		script = script + `})();`;
+		executeJavaScriptInCurrentTab(script);
+	}
+	
 	const writeUrl = (url) => {
 		if (url) {
 			let bbEditMarkdown = (app.name() === "BBEdit" && app.textWindows.at(0).sourceLanguage() === 'Markdown');
@@ -133,13 +158,11 @@ function run() {
 				let window = app.windows()[0];
 
 				let selectedText, markdownLinkText, originalOffset = 0, newOffset = 0;
-				let commentBody, selectionStart, selectionEnd; //GitHub only.
+				let selectionStart, selectionEnd; //GitHub only.
 				
 				if (bbEditMarkdown) {
 					selectedText = markdownLinkText = window.selection.contents().toString();
-				} else if (githubMarkdown) {
-					commentBody = executeJavaScriptInCurrentTab('document.activeElement.value;');
-					
+				} else if (githubMarkdown) {					
 					selectionStart = executeJavaScriptInCurrentTab('document.activeElement.selectionStart;');
 					selectionEnd = executeJavaScriptInCurrentTab('document.activeElement.selectionEnd;');
 					selectedText = markdownLinkText = executeJavaScriptInCurrentTab("document.activeElement.value.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);");
@@ -154,20 +177,10 @@ function run() {
 				}
 				if (MarkdownLinkLocation === 'INLINE' || selectedText.length === 0) {
 					markdownLinkText = selectedText.length ? selectedText.replace(/(.+)/g, '[$1](' + url + ')') : '[' + url + '](' + url + ')';
-					
 					if (bbEditMarkdown) {
-						newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
 						window.selection.contents = markdownLinkText;
 					} else if (githubMarkdown) {
-						newOffset = ((selectionEnd - selectionStart) > 0) ? originalOffset + (markdownLinkText.length-selectedText.length) : originalOffset;
-						
-						let textBefore = commentBody.slice(0, selectionStart);
-						let textToReplace = commentBody.slice(selectionStart, selectionEnd);
-						let textAfter = commentBody.slice(selectionEnd);
-						let newBody = textBefore + markdownLinkText + textAfter;
-						
-						executeJavaScriptInCurrentTab('document.activeElement.value = `' + newBody + '`;');					
-						executeJavaScriptInCurrentTab(`document.activeElement.selectionStart = document.activeElement.selectionEnd = ${newOffset};`);
+						insertTextIntoTextAreaAt(markdownLinkText, selectionStart, selectionEnd);
 					} else {
 						window.document().selectedText = markdownLinkText;
 					}
@@ -177,7 +190,7 @@ function run() {
 					if (bbEditMarkdown) {
 						bodyText = updatedText = window.text();
 					} else if (githubMarkdown) {
-						bodyText = updatedText = commentBody;
+						bodyText = updatedText = getCurrentTextAreaValue();
 					} else {					
 						bodyText = updatedText = window.document().body();
 					}
@@ -206,39 +219,44 @@ function run() {
 					if (bbEditMarkdown) {
 						newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
 						window.selection.contents = markdownLinkText;
+						bodyText = updatedText = window.text();
 					} else if (githubMarkdown) {
 						newOffset = ((selectionEnd - selectionStart) > 0) ? originalOffset + (markdownLinkText.length-selectedText.length) : originalOffset;
-						
-						let textBefore = bodyText.slice(0, selectionStart);
-						let textToReplace = bodyText.slice(selectionStart, selectionEnd);
-						let textAfter = bodyText.slice(selectionEnd);
-						bodyText = textBefore + markdownLinkText + textAfter;
+						insertTextIntoTextAreaAt(markdownLinkText, selectionStart, selectionEnd);
+						bodyText = updatedText = getCurrentTextAreaValue();
 					} else {
 						window.document().selectedText = markdownLinkText;
+						bodyText = updatedText = window.document().body();
 					}
-					let prependedExtraLineBreak = '\n\n';
-					if (/\n\s*$/.test(bodyText)) {
-						prependedExtraLineBreak = '';
-					}
-					bodyText = updatedText = bodyText + prependedExtraLineBreak;
+					let refenceAnchorText = '[' + referenceName + ']: ' + url;
+					referenceAnchorSelectionStart = bodyText.length;
+					
 					if (MarkdownLinkLocation === 'END_OF_PARAGRAPH') {
 						let paragraphBreakRegexp = /\n\n+/g;
 						let paragraphBreakRegexpResult;
 						while ((paragraphBreakRegexpResult = paragraphBreakRegexp.exec(bodyText)) !== null) {
 							if (paragraphBreakRegexp.lastIndex >= bodyText.indexOf(markdownLinkText)) {
-								updatedText = bodyText.slice(0, paragraphBreakRegexpResult.index) + '\n[' + referenceName + ']: ' + url + paragraphBreakRegexpResult[0] + bodyText.slice(paragraphBreakRegexp.lastIndex);
+								refenceAnchorText = '\n' + refenceAnchorText;
+								updatedText = bodyText.slice(0, paragraphBreakRegexpResult.index) + refenceAnchorText + paragraphBreakRegexpResult[0] + bodyText.slice(paragraphBreakRegexp.lastIndex);
+								referenceAnchorSelectionStart = paragraphBreakRegexpResult.index;
 								break;
 							}
 						}
 					} else {
-						updatedText = bodyText + '[' + referenceName + ']: ' + url + '\n';
+						let prependedExtraLineBreak = '\n\n';
+						if (/\n\s*$/.test(bodyText)) {
+							prependedExtraLineBreak = '';
+						}
+						
+						refenceAnchorText = prependedExtraLineBreak + refenceAnchorText + '\n';
+						updatedText = bodyText + refenceAnchorText;
 					}
 		
 					if (updatedText !== bodyText) {
 						if (bbEditMarkdown) {
 							window.text = updatedText;
 						} else if (githubMarkdown) {
-							executeJavaScriptInCurrentTab('document.activeElement.value = `' + updatedText + '`;');
+							insertTextIntoTextAreaAt(refenceAnchorText, referenceAnchorSelectionStart)
 						} else {
 							window.document().body = updatedText;
 						}
