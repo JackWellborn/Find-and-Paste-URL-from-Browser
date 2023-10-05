@@ -10,9 +10,9 @@ function run() {
 		}
 	};
 
-	// let browserConfig = browserConfigs.safari;
+	let browserConfig = browserConfigs.safari;
 	
-	let browserConfig = browserConfigs.chrome;
+	// let browserConfig = browserConfigs.chrome;
 
 	let system = Application("System Events");
 	system.includeStandardAdditions = true;
