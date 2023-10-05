@@ -107,40 +107,83 @@ function run() {
 		}
 	}
 	
+	function executeJavaScriptInCurrentTab(script) {
+		if(browser.name().indexOf("Safari") > -1) {
+			return browser.doJavaScript(script, {in:currentTab});
+		}
+		return browser.execute(currentTab, {javascript:script});
+	}
+	
+	function isGithubComment() {
+		let nodeName = executeJavaScriptInCurrentTab("document.activeElement.nodeName.toLocaleLowerCase();");
+		let ariaLabel = executeJavaScriptInCurrentTab("document.activeElement.ariaLabel;");
+		return (nodeName === 'textarea' && ariaLabel === 'Comment body');
+	}
+	
 	const writeUrl = (url) => {
 		if (url) {
 			let bbEditMarkdown = (app.name() === "BBEdit" && app.textWindows.at(0).sourceLanguage() === 'Markdown');
+			let githubMarkdown = (app.name() === browser.name() && /https\:\/\/github.com(.+)\/pull\/[0-9]+/.test(currentTab.url()) &&  isGithubComment());
 			let marsEditMarkdown = (app.name() === "MarsEdit");
-			
 			if (marsEditMarkdown) {
 				delay(.5); //Weird race condition with MarsEdit
 			}
 					
-			if (enableMarkdownFeatures && (bbEditMarkdown || marsEditMarkdown)) { 
+			if (enableMarkdownFeatures && (bbEditMarkdown || marsEditMarkdown || githubMarkdown)) { 
 				let window = app.windows()[0];
-				let pageTitle = getTitleFromUrl(url);
 
 				let selectedText, markdownLinkText, originalOffset = 0, newOffset = 0;
-				selectedText = markdownLinkText = bbEditMarkdown ? window.selection.contents().toString() : window.document().selectedText();
+				let commentBody, selectionStart, selectionEnd; //GitHub only.
+				
+				if (bbEditMarkdown) {
+					selectedText = markdownLinkText = window.selection.contents().toString();
+				} else if (githubMarkdown) {
+					commentBody = executeJavaScriptInCurrentTab('document.activeElement.value;');
+					
+					selectionStart = executeJavaScriptInCurrentTab('document.activeElement.selectionStart;');
+					selectionEnd = executeJavaScriptInCurrentTab('document.activeElement.selectionEnd;');
+					selectedText = markdownLinkText = executeJavaScriptInCurrentTab("document.activeElement.value.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);");
+				} else {
+					selectedText = markdownLinkText = window.document().selectedText();
+				}
 				
 				if (bbEditMarkdown) { // MarsEdit doesn't provide text offsets
 					originalOffset = newOffset = window.selection.characteroffset();
+				} else if (githubMarkdown) {
+					originalOffset = newOffset = selectionEnd;
 				}
 				if (MarkdownLinkLocation === 'INLINE' || selectedText.length === 0) {
 					markdownLinkText = selectedText.length ? selectedText.replace(/(.+)/g, '[$1](' + url + ')') : '[' + url + '](' + url + ')';
+					
 					if (bbEditMarkdown) {
 						newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
 						window.selection.contents = markdownLinkText;
+					} else if (githubMarkdown) {
+						newOffset = ((selectionEnd - selectionStart) > 0) ? originalOffset + (markdownLinkText.length-selectedText.length) : originalOffset;
+						
+						let textBefore = commentBody.slice(0, selectionStart);
+						let textToReplace = commentBody.slice(selectionStart, selectionEnd);
+						let textAfter = commentBody.slice(selectionEnd);
+						let newBody = textBefore + markdownLinkText + textAfter;
+						
+						executeJavaScriptInCurrentTab('document.activeElement.value = `' + newBody + '`;');					
+						executeJavaScriptInCurrentTab(`document.activeElement.selectionStart = document.activeElement.selectionEnd = ${newOffset};`);
 					} else {
 						window.document().selectedText = markdownLinkText;
 					}
 					return;
 				} else {
 					let bodyText, updatedText;
-					bodyText = updatedText = bbEditMarkdown ? window.text() : window.document().body();
+					if (bbEditMarkdown) {
+						bodyText = updatedText = window.text();
+					} else if (githubMarkdown) {
+						bodyText = updatedText = commentBody;
+					} else {					
+						bodyText = updatedText = window.document().body();
+					}
 					
 					let referenceName = selectedText.length ? selectedText : 'ref';
-					let referenceNameRegExp = new RegExp('\n\['+ referenceName +'[0-9\-]*\]\:','g');
+					let referenceNameRegExp = new RegExp('\n\\['+ referenceName +'[0-9\\-]*\\]\\:','g');
 							
 					let referenceAnchor = '[]';
 					let referenceNameCount = 0;
@@ -163,10 +206,16 @@ function run() {
 					if (bbEditMarkdown) {
 						newOffset = selectedText.length ? originalOffset + markdownLinkText.length-1 : originalOffset;
 						window.selection.contents = markdownLinkText;
+					} else if (githubMarkdown) {
+						newOffset = ((selectionEnd - selectionStart) > 0) ? originalOffset + (markdownLinkText.length-selectedText.length) : originalOffset;
+						
+						let textBefore = bodyText.slice(0, selectionStart);
+						let textToReplace = bodyText.slice(selectionStart, selectionEnd);
+						let textAfter = bodyText.slice(selectionEnd);
+						bodyText = textBefore + markdownLinkText + textAfter;
 					} else {
 						window.document().selectedText = markdownLinkText;
 					}
-					bodyText = updatedText = bbEditMarkdown ? window.text() : window.document().body();
 					let prependedExtraLineBreak = '\n\n';
 					if (/\n\s*$/.test(bodyText)) {
 						prependedExtraLineBreak = '';
@@ -184,9 +233,12 @@ function run() {
 					} else {
 						updatedText = bodyText + '[' + referenceName + ']: ' + url + '\n';
 					}
+		
 					if (updatedText !== bodyText) {
 						if (bbEditMarkdown) {
 							window.text = updatedText;
+						} else if (githubMarkdown) {
+							executeJavaScriptInCurrentTab('document.activeElement.value = `' + updatedText + '`;');
 						} else {
 							window.document().body = updatedText;
 						}
@@ -194,13 +246,16 @@ function run() {
 				}
 				if (bbEditMarkdown) {
 					app.select(window.characters.at(newOffset).insertionPoints.at(0));
+				} else if (githubMarkdown) {
+					executeJavaScriptInCurrentTab(`document.activeElement.selectionStart = document.activeElement.selectionEnd = ${newOffset};`);
 				}
+				
 			} else {
 				pasteURL(url);
 			}
 		}
 	}
-
+	
 	let url = getUserSelectedURL();
 	if (url) {
 		writeUrl(url);
