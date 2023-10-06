@@ -210,7 +210,7 @@
 		browser.windows[0].activeTab;
 
 	const enableMarkdownFeatures = true;
-	const MarkdownLinkLocation = 'END_OF_PARAGRAPH' // Where the link should be located ('END_OF_DOCUMENT', 'END_OF_PARAGRAPH', or 'INLINE').
+	const MarkdownLinkLocation = 'END_OF_DOCUMENT' // Where the link should be located ('END_OF_DOCUMENT', 'END_OF_PARAGRAPH', or 'INLINE').
 	
 	let system = Application("System Events");
 	system.includeStandardAdditions = true;
@@ -418,7 +418,7 @@
 				<key>CustomIconData</key>
 				<string>KMEP-GenericApplication-/Applications/Safari.app</string>
 				<key>ModificationDate</key>
-				<real>718305348.11813498</real>
+				<real>718305501.61327696</real>
 				<key>Name</key>
 				<string>Find and Paste URL From Browser</string>
 				<key>Triggers</key>
