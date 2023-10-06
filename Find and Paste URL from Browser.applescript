@@ -156,6 +156,7 @@ function run() {
 					
 			if (enableMarkdownFeatures && (bbEditMarkdown || marsEditMarkdown || githubMarkdown)) { 
 				let window = app.windows()[0];
+				let pageTitle = getTitleFromUrl(url);
 
 				let selectedText, markdownLinkText, originalOffset = 0, newOffset = 0;
 				let selectionStart, selectionEnd; //GitHub only.
@@ -232,20 +233,25 @@ function run() {
 					referenceAnchorSelectionStart = bodyText.length;
 					
 					if (MarkdownLinkLocation === 'END_OF_PARAGRAPH') {
+						refenceAnchorText = '\n' + refenceAnchorText;
 						let paragraphBreakRegexp = /\n\n+/g;
 						let paragraphBreakRegexpResult;
 						while ((paragraphBreakRegexpResult = paragraphBreakRegexp.exec(bodyText)) !== null) {
 							if (paragraphBreakRegexp.lastIndex >= bodyText.indexOf(markdownLinkText)) {
-								refenceAnchorText = '\n' + refenceAnchorText;
 								updatedText = bodyText.slice(0, paragraphBreakRegexpResult.index) + refenceAnchorText + paragraphBreakRegexpResult[0] + bodyText.slice(paragraphBreakRegexp.lastIndex);
 								referenceAnchorSelectionStart = paragraphBreakRegexpResult.index;
 								break;
 							}
 						}
+						if (updatedText === bodyText) { // We are in the last paragraph
+							updatedText = bodyText.replace(/(\n*)$/, refenceAnchorText + "$1");
+						}
 					} else {
 						let prependedExtraLineBreak = '\n\n';
-						if (/\n\s*$/.test(bodyText)) {
+						if (/\[.+\]\:.+\n\s*$/.test(bodyText)) {
 							prependedExtraLineBreak = '';
+						} else if (/.+\n\s*$/.test(bodyText)) {
+							prependedExtraLineBreak = '\n';
 						}
 						
 						refenceAnchorText = prependedExtraLineBreak + refenceAnchorText + '\n';

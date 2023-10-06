@@ -10,12 +10,12 @@ The script below uses Mac OS's JavaScript for Automation to retrieve the url fro
 
 When invoked, the script will present a dialog containing a list of all URLs opened as tabs in a given browser. The URL from the current tab is selected automatically. Use the mouse or arrow keys to select the desired URL from the list. Press the return key or click the "Okay" button to paste the selected URL. Press the esc key or click "Cancel" to do nothing.
 
-#### Markdown Links in BBEdit and MarsEdit
-Thanks to superb AppleScript support, creating Markdown links are streamlined when using this script with either BBEdit or MarsEdit. This is enabled by default, but can be easily disabled via configuration (see "Configuration Options" below.) The added Markdown support has several benefits:
+#### Markdown Links in BBEdit, MarsEdit, and Github
+Creating Markdown links are streamlined when using this script with either BBEdit or MarsEdit thanks to superb AppleScript support, and is also streamlined with editing PR comments on [Github.com][] thanks to standard web APIs. This is enabled by default, but can be easily disabled via configuration (see "Configuration Options" below.) The added Markdown support has several benefits:
 
 - Uses selected text for links -- Links will use the current selection for linked text, when provided. Empty brackets will be used otherwise.
 - Supports both inline and reference style links -- Links can either be added right after the linked text or elsewhere in the document using a reference. When using reference style links, the script can be configured to add them to the end of the document or to the end of the paragraph currently being edited. 
-- Sensible insertion point placement in BBEdit -- When text is selected, the insertion point will be placed after the link so you can continue writing. When no text is selected, the insertion point will be placed between the empty brackets created so you can provide the linked text. This is only available in BBEdit as MarsEdit does not yet surface the insertion point offset information in AppleScript.
+- Sensible insertion point placement in BBEdit and Github -- When text is selected, the insertion point will be placed after the link so you can continue writing. This is not available in MarsEdit as that application does not yet surface the insertion point offset information in AppleScript.
 
 #### Keyboard Maestro Example
 https://github.com/JackWellborn/Find-and-Paste-URL-from-Browser/assets/21010090/92a6cbd4-e454-4cca-8c04-1b4dbb904c4d
@@ -72,6 +72,9 @@ You can configure `Find and Paste URL from Browser.scpt` by editing these option
 </table>
 
 ## Updates
+### 2023-10-06
+* Added Markdown support when editting PR comments on [Github.com][].
+
 ### 2023-08-16
 This is a major update that removes prior functionality in favor a simplified flow. 
 * The biggest change is this removes the text prompt to query URLs. Navigating a list turned out to be so much more intuitive that I personally stopped using the query functionality. 
@@ -100,3 +103,4 @@ This is a major update that removes prior functionality in favor a simplified fl
 Be aware that this solution uses automation to control keyboard input, manipulate the clipboard, and access Safari and Google Chrome. The scripts involved operate locally and only uses these privileges to return URLs as stated above, but this authors recommends further scrutiny when any solution has these and similar elevated privileges.
 
 [md]: https://daringfireball.net/projects/markdown/syntax#link
+[Github.com]: https://github.com/
