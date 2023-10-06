@@ -11,7 +11,6 @@ function run() {
 	};
 
 	let browserConfig = browserConfigs.safari;
-	
 	// let browserConfig = browserConfigs.chrome;
 
 	let system = Application("System Events");
@@ -150,6 +149,7 @@ function run() {
 			let bbEditMarkdown = (app.name() === "BBEdit" && app.textWindows.at(0).sourceLanguage() === 'Markdown');
 			let githubMarkdown = (app.name() === browser.name() && /https\:\/\/github.com(.+)\/pull\/[0-9]+/.test(currentTab.url()) &&  isGithubComment());
 			let marsEditMarkdown = (app.name() === "MarsEdit");
+
 			if (marsEditMarkdown) {
 				delay(.5); //Weird race condition with MarsEdit
 			}
